@@ -5,33 +5,92 @@
 #
 #
 
-
 from numpy import *
-
+import copy
 
 class QRegister:
-    pass
+    def __rmul__(self, arg1):
+        # arg1 * self
+        if type(arg1) not in [int, float]:
+            raise Exception()
+        result = copy.deepcopy(self)
+        result.matrix = arg1 * self.matrix
+        return result
+    def __add__(self, arg2):
+        # self + arg2
+        result = copy.deepcopy(self)
+        result.matrix = self.matrix + arg2.matrix
+        return result
+    def __pow__(self, arg2):
+        # self ** arg2
+        result = QRegister()
+        result.matrix = kron(self.matrix, arg2.matrix)
+        return result
+    def __str__(self):
+        return str(self.matrix)
+    def normalize(self):
+        l = sqrt(sum([abs(x)**2 for x in self.matrix]))
+        self.matrix = l * self.matrix
+        return self
+    def measure(self, *qubits):
+        pass
+
 
 class Qubit(QRegister):
-    pass
+    def __init__(self, val):
+        self.size = 2
+        if val == 0:
+            self.matrix = transpose(array([[1, 0]]))
+        elif val == 1:
+            self.matrix = transpose(array([[0, 1]]))
+        else:
+            raise Exception()
 
 
 class QCircuit:
     def __init__(self, *stages):
         self.stages = stages
 
-    def process(self, qreg):
-        m = self.stages[0]
-        for s in self.stages[1:]:
-            m = m * s
+    def __call__(self, qreg):
+        # tu mozna uwzglednic wydajny algorytm (memory)
+        result = copy.deepcopy(qreg)
+        for s in self.stages:
+            result = s(result)
+        return result
+
+
 
 
 class QGate:
     def __init__(self):
         pass
 
+    def __pow__(self, arg2):
+        # polaczenie rownolegle bramek
+        if not isinstance(arg2, QGate):
+            raise Exception()
+        result = Stage(self, arg2)
+        return result
+    def __str__(self):
+        return str(self.matrix)
     def __mul__(self, arg2):
-        pass
+        # self * arg2
+        if isinstance(arg2, QRegister):
+            # gate * reg
+            result = QRegister()
+            result.matrix = dot(self.matrix, arg2.matrix)
+            return result
+        if self.matrix.shape != arg2.matrix.shape:
+            raise Exception()
+        # gate * gate
+        result = QGate()
+        # order changed!
+        result.matrix = dot(arg2.matrix, self.matrix)
+        return result
+    def __call__(self, qreg):
+        if not isinstance(qreg, QRegister):
+            raise Exception()
+        return self * qreg
 
 
 class Stage(QGate):
@@ -41,13 +100,6 @@ class Stage(QGate):
         for g in self.gates[1:]:
             m = kron(m, g.matrix)
         self.matrix = m
-
-    def __mul__(self, arg2):
-        if isinstance(arg2, QRegister):
-        elif isinstance(arg2, Stage):
-        else:
-            raise Exception('Wrong type exception')
-
 
 
 class AbstractQGate(QGate):
@@ -60,19 +112,28 @@ class Identity(AbstractQGate):
 
 class Hadamard(AbstractQGate):
     def __init__(self, size = 2):
-        self.matrix = matrix([
+        self.matrix = s2 * matrix([
             [1, 1],
             [1, -1]])
 
 
 
 class CNot(AbstractQGate):
-    def __init__(self):
-        self.matrix = matrix([
-            [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 0, 1],
-            [0, 0, 1, 0]])
+    def __init__(self, control = 1, target = 0):
+        if control not in (0, 1) or target not in (1, 0) or control == target:
+            raise Exception()
+        if control == 1 and target == 0:
+            self.matrix = matrix([
+                [1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 1, 0]])
+        elif control == 0 and target == 1:
+            self.matrix = matrix([
+                [1, 0, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 1, 0],
+                [0, 1, 0, 0]])
 
 class Not(AbstractQGate):
     def __init__(self):
@@ -84,15 +145,64 @@ class WrongSizeException(Exception):
     def __str__(self):
         return 'Wrong size of quantum computing object'
 
-ket0 = transpose(array([[1, 0]]))
-ket1 = transpose(array([[0, 1]]))
+ket0 = Qubit(0)
+ket1 = Qubit(1)
 s2 = sqrt(2) / 2
 
 if __name__ == '__main__':
-    circ = QCircuit(
-            Stage(Identity(2), Hadamard()),
-            Stage(CNot())
-            )
-    print circ.process(ket0)
+    import sys
+    
+    # kety bazy standardowej
+    print ket0
+    print ket1
 
+    # arbitralne stany kubitow
+    print 0.3 * ket0
+    print 0.4 * ket0 + 0.5 * ket1
+    print (0.4 * ket0 + 0.5 * ket1).normalize()
+    print repr(0.4 * ket0 + 0.5 * ket1)
+    print repr(ket0)
+
+    # iloczyn tensorowy kubitow i rej kwantowych
+    print ket0 ** ket0
+    print ket0 ** ket1
+    print ket1 ** ket1
+    print repr(ket1 ** ket1)
+    print ket0 ** ket1 ** ket0
+    print repr(ket0 ** ket1 ** ket0)
+
+    # bramki elementarne
+    h2 = Hadamard()
+    I = Identity()
+    cnot = CNot()
+    print h2
+    print I
+    print cnot
+    print repr(cnot)
+
+    # mnozenie bramek
+    print h2 * I
+
+    # iloczyn tensorowy bramek
+    print h2 ** cnot
+    print h2 ** cnot ** cnot
+
+    # dzialanie bramka na rejestr lub kubit
+    print h2 * I
+    print h2 * ket0
+    print h2 * ket1
+
+    # calling gates like functions
+    print h2(ket0)
+
+    print 
+    cnot2 = CNot(0, 1)
+    circ = (I ** h2 ** I) * (I ** cnot) * (cnot2 ** I)
+    print circ(ket0 ** ket0 ** ket0)
+    circ = QCircuit(
+            Stage(I, h2, I),
+            Stage(I, cnot),
+            Stage(cnot2, I)
+    )
+    print circ(ket0 ** ket0 ** ket0)
 
