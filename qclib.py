@@ -68,7 +68,7 @@ class QGate:
     def __pow__(self, arg2):
         # polaczenie rownolegle bramek
         if not isinstance(arg2, QGate):
-            raise Exception()
+            raise Exception(repr(arg2))
         result = Stage(self, arg2)
         return result
     def __str__(self):
@@ -141,6 +141,15 @@ class Not(AbstractQGate):
             [0, 1],
             [1, 0]])
 
+class Swap(AbstractQGate):
+    def __init__(self):
+        self.matrix = matrix([
+            [1, 0, 0, 0],
+            [0, 0, 1, 0],
+            [0, 1, 0, 0],
+            [0, 0, 0, 1]])
+
+
 class WrongSizeException(Exception):
     def __str__(self):
         return 'Wrong size of quantum computing object'
@@ -205,4 +214,15 @@ if __name__ == '__main__':
             Stage(cnot2, I)
     )
     print circ(ket0 ** ket0 ** ket0)
+
+    print 
+    input = ket0 ** ket0 ** ket0
+    circ = (I ** h2 ** I) * (I ** cnot) * (cnot2 ** I)
+    print circ(input)
+
+    print
+    print 'swap test, niesasiadujace kubity, test z cnot2'
+    circ = (I ** Swap()) * (cnot2 ** I) * (I ** Swap())
+    print circ
+    print circ(ket1 ** ket0 ** ket1)
 
