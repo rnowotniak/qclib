@@ -158,6 +158,11 @@ ket0 = Qubit(0)
 ket1 = Qubit(1)
 s2 = sqrt(2) / 2
 
+h2 = Hadamard()
+I = Identity()
+cnot = CNot()
+cnot2 = CNot(0, 1)
+
 if __name__ == '__main__':
     import sys
     
