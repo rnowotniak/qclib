@@ -275,6 +275,7 @@ class Stage(QGate):
         for g in self.gates[1:]:
             m = kron(m, g.matrix)
         self.matrix = m
+        self.size = sum([g.size for g in gates])
 
 #
 # Elementary quantum gates
@@ -287,6 +288,7 @@ class AbstractQGate(QGate):
 class Identity(AbstractQGate):
     def __init__(self, size = 1):
         self.matrix = eye(2 ** size)
+        self.size = size
         
 
 class Hadamard(AbstractQGate):
@@ -298,26 +300,29 @@ class Hadamard(AbstractQGate):
         for i in xrange(size - 1):
             m = kron(m, h2)
         self.matrix = m
+        self.size = size
 
 
 class CNot(AbstractQGate):
     '''Controlled not gate'''
 
     def __init__(self, control = 1, target = 0):
-        if control not in (0, 1) or target not in (1, 0) or control == target:
-            raise Exception()
         if control == 1 and target == 0:
             self.matrix = matrix([
                 [1, 0, 0, 0],
                 [0, 1, 0, 0],
                 [0, 0, 0, 1],
                 [0, 0, 1, 0]])
+            self.size = 2
         elif control == 0 and target == 1:
             self.matrix = matrix([
                 [1, 0, 0, 0],
                 [0, 0, 0, 1],
                 [0, 0, 1, 0],
                 [0, 1, 0, 0]])
+            self.size = 2
+        else:
+            raise Exception, 'Not implemented yet'
 
 
 class Not(AbstractQGate):
@@ -327,6 +332,7 @@ class Not(AbstractQGate):
         self.matrix = matrix([
             [0, 1],
             [1, 0]])
+        self.size = 1
 
 class PhaseShift(AbstractQGate):
     def __init__(self, angle = pi):
@@ -334,6 +340,7 @@ class PhaseShift(AbstractQGate):
         self.matrix = matrix([
             [1, 0],
             [0, exp(angle * 1j)]])
+        self.size = 1
 
 
 class Toffoli(AbstractQGate):
@@ -348,6 +355,7 @@ class Toffoli(AbstractQGate):
             [ 0,  0,  0,  0,  0,  1,  0,  0],
             [ 0,  0,  0,  0,  0,  0,  0,  1],
             [ 0,  0,  0,  0,  0,  0,  1,  0]])
+        self.size = 3
 
 
 class Fredkin(AbstractQGate):
@@ -362,6 +370,7 @@ class Fredkin(AbstractQGate):
             [ 0,  0,  0,  0,  0,  0,  1,  0],
             [ 0,  0,  0,  0,  0,  1,  0,  0],
             [ 0,  0,  0,  0,  0,  0,  0,  1]])
+        self.size = 3
 
 
 class Swap(AbstractQGate):
@@ -372,6 +381,7 @@ class Swap(AbstractQGate):
             [0, 0, 1, 0],
             [0, 1, 0, 0],
             [0, 0, 0, 1]])
+        self.size = 2
 
 
 class Arbitrary(AbstractQGate):
@@ -381,6 +391,7 @@ class Arbitrary(AbstractQGate):
         if (m.H * m != eye(m.shape[0])).any() == False:
             raise Exception, 'Not unitary matrix for quantum gate'
         self.matrix = m
+        self.size = int(math.log(m.shape[0], 2))
 
 
 class WrongSizeException(Exception):
