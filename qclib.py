@@ -18,7 +18,6 @@
 # You should have received a copy of the GNU General Public License
 # along with qclib; if not, write to the Free Software
 
-
 from numpy import *
 from random import random
 import copy
@@ -41,6 +40,7 @@ class QRegister:
         if not isinstance(m, matrix) or m.shape[1] != 1:
             raise WrongSizeException
         self.matrix = m
+        self.size = int(math.log(m.size, 2))
 
     def __rmul__(self, arg1):
         # arg1 * self
@@ -66,6 +66,7 @@ class QRegister:
         # self ** arg2
         result = QRegister()
         result.matrix = kron(self.matrix, arg2.matrix)
+        result.size = int(math.log(result.matrix.size, 2))
         return result
 
     def __cmp__(self, other):
@@ -217,15 +218,13 @@ class QCircuit:
 class QGate:
     '''Quantum gate class'''
 
-    def __init__(self):
-        pass
-
     def __pow__(self, arg2):
         # parallel gates
         if not isinstance(arg2, QGate):
             raise Exception(repr(arg2))
         result = Stage(self, arg2)
         return result
+
     def __str__(self):
         return str(self.matrix)
 
@@ -284,6 +283,7 @@ class Stage(QGate):
 class AbstractQGate(QGate):
     pass
 
+
 class Identity(AbstractQGate):
     def __init__(self, size = 1):
         self.matrix = eye(2 ** size)
@@ -319,6 +319,7 @@ class CNot(AbstractQGate):
                 [0, 0, 1, 0],
                 [0, 1, 0, 0]])
 
+
 class Not(AbstractQGate):
     '''Not gate'''
 
@@ -333,6 +334,7 @@ class PhaseShift(AbstractQGate):
         self.matrix = matrix([
             [1, 0],
             [0, exp(angle * 1j)]])
+
 
 class Toffoli(AbstractQGate):
     '''Toffoli gate -- Controlled Controlled Not gate'''
