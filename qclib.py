@@ -76,10 +76,14 @@ class QRegister:
             m2 = other.matrix
         else:
             return -1
-        if sum(abs(m1 - m2)) < epsilon:
-            return 0
-        else:
-            return 1
+        try:
+            if sum(abs(m1 - m2)) < epsilon:
+                return 0
+            else:
+                return 1
+        except Exception:
+            raise WrongSizeException, \
+                    'Comparison of different size quantum registers'
 
     def __str__(self):
         return str(self.matrix)
@@ -278,11 +282,14 @@ class Identity(AbstractQGate):
 
 class Hadamard(AbstractQGate):
     def __init__(self, size = 1):
-        if size != 1:
-            raise Exception, 'Not implemented yet'
-        self.matrix = s2 * matrix([
+        h2 = s2 * matrix([
             [1, 1],
             [1, -1]])
+        m = h2
+        for i in xrange(size - 1):
+            m = kron(m, h2)
+        self.matrix = m
+
 
 class CNot(AbstractQGate):
     '''Controlled not gate'''
@@ -320,13 +327,34 @@ class PhaseShift(AbstractQGate):
 
 class Toffoli(AbstractQGate):
     '''Toffoli gate -- Controlled Controlled Not gate'''
-    pass
+    def __init__(self):
+        self.matrix = matrix([
+            [ 1,  0,  0,  0,  0,  0,  0,  0],
+            [ 0,  1,  0,  0,  0,  0,  0,  0],
+            [ 0,  0,  1,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  1,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  1,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  1,  0,  0],
+            [ 0,  0,  0,  0,  0,  0,  0,  1],
+            [ 0,  0,  0,  0,  0,  0,  1,  0]])
+
 
 class Fredkin(AbstractQGate):
     '''Fredkin gate -- Controlled Swap gate'''
-    pass
+    def __init__(self):
+        self.matrix = matrix([
+            [ 1,  0,  0,  0,  0,  0,  0,  0],
+            [ 0,  1,  0,  0,  0,  0,  0,  0],
+            [ 0,  0,  1,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  1,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  1,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0,  1,  0],
+            [ 0,  0,  0,  0,  0,  1,  0,  0],
+            [ 0,  0,  0,  0,  0,  0,  0,  1]])
+
 
 class Swap(AbstractQGate):
+    '''Qubits order swap gate'''
     def __init__(self):
         self.matrix = matrix([
             [1, 0, 0, 0],
@@ -334,9 +362,14 @@ class Swap(AbstractQGate):
             [0, 1, 0, 0],
             [0, 0, 0, 1]])
 
+
 class Arbitrary(AbstractQGate):
+    '''Quantum gate with arbitrary unitary matrix'''
     def __init__(self, m):
-        self.matrix = matrix(m)
+        m = matrix(m)
+        if m.H * m != eye(m.shape[0]):
+            raise Exception, 'Not unitary matrix for quantum gate'
+        self.matrix = m
 
 
 class WrongSizeException(Exception):

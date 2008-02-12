@@ -77,7 +77,7 @@ class QRegisterTestCase(unittest.TestCase):
             else:
                 self.fail('Not possible measurement result')
         assert res[0] + res[1] == 100, 'Not possible measurements result'
-        assert abs(res[0] - 50) < 15
+        assert abs(res[0] - 50) < 15, 'Not fair distribution of results'
 
         for i in xrange(10):
             q = (Ket(5) + Ket(6)).normalize()
@@ -104,7 +104,10 @@ class QRegisterTestCase(unittest.TestCase):
         print q0.measure(2, 1)
         print q0
         print q0.dirac()
-        
+
+        q = ket0 ** (s2 * ket0 + s2 * ket1).normalize() ** ket1
+        assert q.measure(1) in (Ket(0), Ket(1))
+        assert q in (Ket(1, 3), Ket(3, 3))
 
 
 if __name__ == '__main__':

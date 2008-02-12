@@ -4,5 +4,7 @@ from qclib import *
 
 epr = (Hadamard() ** I) * CNot()
 
-print epr(ket0 ** ket0)
+pair = epr(ket0 ** ket0)
+print pair
+print pair.dirac()
 
