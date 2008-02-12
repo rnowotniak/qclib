@@ -388,7 +388,7 @@ class Arbitrary(AbstractQGate):
     '''Quantum gate with arbitrary unitary matrix'''
     def __init__(self, m):
         m = matrix(m)
-        if (m.H * m != eye(m.shape[0])).any() == False:
+        if (m.H * m == eye(m.shape[0])).any() == False:
             raise Exception, 'Not unitary matrix for quantum gate'
         self.matrix = m
         self.size = int(math.log(m.shape[0], 2))

@@ -2,7 +2,10 @@
 
 from qclib import *
 
-circ = (I ** Hadamard() ** I) * (I ** CNot()) * (CNot(0, 1) ** I)
+circuit = (I ** Hadamard() ** I) * (I ** CNot()) * (CNot(0, 1) ** I)
 
-print circ(ket0 ** ket0 ** ket0)
+result = circuit(ket0 ** ket0 ** ket0)
+
+print result.dirac()
+print result
 

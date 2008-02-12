@@ -27,7 +27,8 @@ psi = Qubit([
 
 
 alice = (I ** L ** I) * (I ** cnot) * (cnot ** I) * (R ** I ** I)
-bob = (S ** cnot) * (I ** Swap()) * (cnot2 ** I) * (I ** Swap()) * (S ** I ** T) * (I ** Swap()) * (cnot2 ** I) * (I ** Swap())
+bob = (S ** cnot) * (I ** Swap()) * (cnot2 ** I) * \
+        (I ** Swap()) * (S ** I ** T) * (I ** Swap()) * (cnot2 ** I) * (I ** Swap())
 
 input = psi ** ket0 ** ket0
 qreg = alice(input)

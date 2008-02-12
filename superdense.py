@@ -2,17 +2,17 @@
 
 from qclib import *
 
-qreg = epr()
+qregiter = epr()
 
 b1 = 1
 b2 = 1
 
 # Perform coding operations on Alice qubit
 if b1:
-    qreg = (PhaseShift(pi) ** I)(qreg)
+    qregiter = (PhaseShift(pi) ** I)(qregiter)
 
 if b2:
-    qreg = (Not() ** I)(qreg)
+    qregiter = (Not() ** I)(qregiter)
 
 B = Arbitrary([
     [s2,   0,  0,  s2],
@@ -21,7 +21,7 @@ B = Arbitrary([
     [ 0, -s2, s2 ,  0],
     ])
 
-print B(qreg).dirac()
+print B(qregiter).dirac()
 
 
 
