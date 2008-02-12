@@ -6,6 +6,7 @@
 #
 
 from numpy import *
+from random import random
 import copy
 
 epsilon = 10e-6
@@ -22,8 +23,25 @@ def dec2bin(dec):
         dec = dec >> 1
     return result
 
+def Ket(n):
+    if n == 0 or n == 1:
+        return Qubit(n)
+    ket = QRegister()
+    ket.matrix = transpose(matrix([zeros(2**int(floor(math.log(n, 2)) + 1))]))
+    ket.matrix[n] = 1
+    return ket
 
 class QRegister:
+    def __init__(self, m = None):
+        if m == None:
+            return
+        if isinstance(m, ndarray):
+            m = matrix(m)
+        if isinstance(m, matrix) and m.shape[0] == 1:
+            m = transpose(m)
+        if not isinstance(m, matrix) or m.shape[1] != 1:
+            raise WrongSizeException
+        self.matrix = m
     def __rmul__(self, arg1):
         # arg1 * self
         if type(arg1) not in [int, float]:
@@ -43,12 +61,30 @@ class QRegister:
         return result
     def __str__(self):
         return str(self.matrix)
+    def reset(self, n = 0):
+        for i in xrange(self.matrix.size):
+            self.matrix[i] = 0
+        self.matrix[n] = 1
     def normalize(self):
         l = sqrt(sum([abs(x)**2 for x in self.matrix]))
-        self.matrix = l * self.matrix
+        self.matrix = self.matrix / l
         return self
     def measure(self, *qubits):
-        pass
+        if len(qubits) == 0:
+            # measure all qubits in register
+            pass
+        else:
+            raise Exception, 'Not implemented yet'
+        r = random()
+        p = [float(x) for x in array(abs(self.matrix)) ** 2]
+        # acumulated values
+        for i in xrange(1,len(p)):
+            p[i] += p[i - 1]
+        for i in xrange(len(p)):
+            if r < p[i]:
+                break
+        self.reset(i)
+        return self
     def dirac(self, reduce = True, binary = True):
         """Return state in Dirac (bra-ket) notation"""
         elems = []
@@ -83,11 +119,11 @@ class Qubit(QRegister):
     def __init__(self, val):
         self.size = 2
         if val == 0:
-            self.matrix = transpose(array([[1, 0]]))
+            self.matrix = transpose(matrix([[1, 0]]))
         elif val == 1:
-            self.matrix = transpose(array([[0, 1]]))
+            self.matrix = transpose(matrix([[0, 1]]))
         else:
-            raise Exception()
+            raise WrongSizeException
 
 
 class QCircuit:
@@ -95,7 +131,9 @@ class QCircuit:
         self.stages = stages
 
     def __call__(self, qreg):
-        # tu mozna uwzglednic wydajny algorytm (memory)
+        # tu mozna uwzglednic wydajny algorytm
+        # Wissam A. Samad, Roy Ghandour, and Mohamad.
+        # Memory efficient quantum circuit simulator based on linked list architecture
         result = copy.deepcopy(qreg)
         for s in self.stages:
             result = s(result)
@@ -134,6 +172,16 @@ class QGate:
         if not isinstance(qreg, QRegister):
             raise Exception()
         return self * qreg
+    def trace(self):
+        return self.matrix.trace()
+    def determinant(self):
+        return linalg.det(self.matrix)
+    def transpose(self):
+        self.matrix = transpose(self.matrix)
+        return self
+    def inverse(self)
+        self.matrix = linalg.inv(self.matrix)
+        return self
 
 
 class Stage(QGate):
@@ -190,6 +238,12 @@ class PhaseShift(AbstractQGate):
         self.matrix = matrix([
             [1, 0],
             [0, exp(angle * 1j)]])
+
+class Toffoli(AbstractQGate):
+    pass
+
+class Fredkin(AbstractQGate):
+    pass
 
 class Swap(AbstractQGate):
     def __init__(self):

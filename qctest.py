@@ -7,6 +7,9 @@ import unittest
 
 from qclib import *
 
+class QuantumCircuit(unittest.TestCase):
+    pass
+
 class QRegister(unittest.TestCase):
 
     def setUp(self):
@@ -37,6 +40,14 @@ class QRegister(unittest.TestCase):
         inp = ket0 ** ket0
         print epr(inp).dirac()
 
+    def testKet(self):
+        print (Ket(5) + Ket(6)).normalize().dirac()
+
+    def testMeasure(self):
+        print ket0.measure()
+        print ket1.measure()
+        print (ket0 + ket1).normalize().measure()
+        print (Ket(5) + Ket(6)).normalize().measure().dirac()
 
 
 if __name__ == '__main__':
