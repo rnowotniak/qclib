@@ -168,6 +168,15 @@ class QRegister:
             elems.append(elem)
         return ' '.join(elems)
 
+    def outer(self, qreg):
+        '''Compute an outer product with another register'''
+        if self.matrix.size != transpose(qreg.matrix).size:
+            raise WrongSizeException, \
+                    'Outer product of different size registers'
+        result = Arbitrary(dot(self.matrix, transpose(qreg.matrix)))
+        return result
+
+
 
 class Qubit(QRegister):
     '''Qubit class'''
@@ -212,7 +221,7 @@ class QGate:
         pass
 
     def __pow__(self, arg2):
-        # polaczenie rownolegle bramek
+        # parallel gates
         if not isinstance(arg2, QGate):
             raise Exception(repr(arg2))
         result = Stage(self, arg2)
@@ -367,7 +376,7 @@ class Arbitrary(AbstractQGate):
     '''Quantum gate with arbitrary unitary matrix'''
     def __init__(self, m):
         m = matrix(m)
-        if m.H * m != eye(m.shape[0]):
+        if (m.H * m != eye(m.shape[0])).any() == False:
             raise Exception, 'Not unitary matrix for quantum gate'
         self.matrix = m
 
