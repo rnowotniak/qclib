@@ -18,7 +18,7 @@ I = Identity(N)
 w0 = Ket(n)
 
 # initial state of quantum register
-phi0 = QRegister(matrix([ones(N) / sqrt(N)]))
+phi0 = QRegister([ones(N) / sqrt(N)])
 
 print phi0
 

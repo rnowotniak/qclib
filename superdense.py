@@ -14,12 +14,12 @@ if b1:
 if b2:
     qreg = (Not() ** I)(qreg)
 
-B = Arbitrary(matrix([
+B = Arbitrary([
     [s2,   0,  0,  s2],
     [ 0,  s2, s2,   0],
     [s2,   0,  0, -s2],
     [ 0, -s2, s2 ,  0],
-    ]))
+    ])
 
 print B(qreg).dirac()
 
