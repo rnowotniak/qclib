@@ -8,6 +8,21 @@
 from numpy import *
 import copy
 
+epsilon = 10e-6
+
+def dec2bin(dec):
+    """convert decimal value to binary string"""
+    result = ""
+    if dec < 0:
+        raise ValueError, "Must be a positive integer"
+    if dec == 0:
+        return '0'
+    while dec > 0:
+        result = str(dec % 2) + result
+        dec = dec >> 1
+    return result
+
+
 class QRegister:
     def __rmul__(self, arg1):
         # arg1 * self
@@ -34,6 +49,34 @@ class QRegister:
         return self
     def measure(self, *qubits):
         pass
+    def dirac(self, reduce = True, binary = True):
+        """Return state in Dirac (bra-ket) notation"""
+        elems = []
+        if len(filter(lambda x: float(abs(x)) > 1 - epsilon, self.matrix)) == 1:
+            single = True
+        else:
+            single = False
+        for i in xrange(self.matrix.size):
+            val = complex(real(self.matrix[i]), imag(self.matrix[i]))
+            if reduce and abs(val) < epsilon:
+                continue
+            if abs(val) < epsilon:
+                elem = '+0'
+            elif imag(val) == 0:
+                elem = '%+g' % abs(val)
+            elif real(val) != 0:
+                elem = '+%s' % str(val)
+            else:
+                # only imaginary part
+                elem = '%+gj' % (imag(val))
+            if single and reduce:
+                elem = ''
+            if binary:
+                elem += ('|%0'+str(math.log(self.matrix.size, 2))+'d>') % int(dec2bin(i))
+            else:
+                elem += '|%s>' % i
+            elems.append(elem)
+        return ' '.join(elems)
 
 
 class Qubit(QRegister):
@@ -141,6 +184,13 @@ class Not(AbstractQGate):
             [0, 1],
             [1, 0]])
 
+class PhaseShift(AbstractQGate):
+    def __init__(self, angle = pi):
+        self.angle = angle
+        self.matrix = matrix([
+            [1, 0],
+            [0, exp(angle * 1j)]])
+
 class Swap(AbstractQGate):
     def __init__(self):
         self.matrix = matrix([
@@ -149,14 +199,26 @@ class Swap(AbstractQGate):
             [0, 1, 0, 0],
             [0, 0, 0, 1]])
 
+class Arbitrary(AbstractQGate):
+    def __init__(self, m):
+        self.matrix = matrix(m)
+
+
+ket0 = Qubit(0)
+ket1 = Qubit(1)
+s2 = sqrt(2) / 2
+
+def epr(qreg = ket0 ** ket0):
+    """Generate an EPR-pair for |00> input"""
+    circ = (Hadamard() ** I) * CNot()
+    return circ(qreg)
+
+
 
 class WrongSizeException(Exception):
     def __str__(self):
         return 'Wrong size of quantum computing object'
 
-ket0 = Qubit(0)
-ket1 = Qubit(1)
-s2 = sqrt(2) / 2
 
 h2 = Hadamard()
 I = Identity()
@@ -229,5 +291,7 @@ if __name__ == '__main__':
     print 'swap test, niesasiadujace kubity, test z cnot2'
     circ = (I ** Swap()) * (cnot2 ** I) * (I ** Swap())
     print circ
-    print circ(ket1 ** ket0 ** ket1)
+    input = ket1 ** ket0 ** ket1
+    print input.dirac()
+    print circ(input).dirac()
 
