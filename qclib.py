@@ -246,6 +246,26 @@ class QGate:
         result.matrix = dot(arg2.matrix, self.matrix)
         return result
 
+    def __rmul__(self, arg1):
+        # arg1 * self
+        if type(arg1) not in [int, float, complex]:
+            raise Exception, 'Numerical coefficient expected'
+        result = copy.deepcopy(self)
+        result.matrix = arg1 * self.matrix
+        return result
+
+    def __add__(self, arg2):
+        # self + arg2
+        result = copy.deepcopy(self)
+        result.matrix = self.matrix + arg2.matrix
+        return result
+
+    def __sub__(self, arg2):
+        # self - arg2
+        result = copy.deepcopy(self)
+        result.matrix = self.matrix - arg2.matrix
+        return result
+
     def __call__(self, qreg):
         if not isinstance(qreg, QRegister):
             raise Exception()
@@ -389,7 +409,8 @@ class Arbitrary(AbstractQGate):
     def __init__(self, m):
         m = matrix(m)
         if (m.H * m == eye(m.shape[0])).any() == False:
-            raise Exception, 'Not unitary matrix for quantum gate'
+            pass
+            # raise Exception, 'Not unitary matrix for quantum gate'
         self.matrix = m
         self.size = int(math.log(m.shape[0], 2))
 
