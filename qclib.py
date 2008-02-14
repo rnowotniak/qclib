@@ -16,7 +16,7 @@
 # GNU General Public License for more details.
 # 
 # You should have received a copy of the GNU General Public License
-# along with qclib; if not, write to the Free Software
+# along with qclib; if not, write to the Free Software Foundation
 
 from numpy import *
 from random import random
