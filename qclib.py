@@ -267,6 +267,9 @@ class QGate:
         return result
 
     def __call__(self, qreg):
+        return self.compute(qreg)
+
+    def compute(self, qreg):
         if not isinstance(qreg, QRegister):
             raise Exception()
         return self * qreg
@@ -301,17 +304,17 @@ class Stage(QGate):
 # Elementary quantum gates
 #
 
-class AbstractQGate(QGate):
+class ElementaryQuantumGate(QGate):
     pass
 
 
-class Identity(AbstractQGate):
+class Identity(ElementaryQuantumGate):
     def __init__(self, size = 1):
         self.matrix = eye(2 ** size)
         self.size = size
         
 
-class Hadamard(AbstractQGate):
+class Hadamard(ElementaryQuantumGate):
     def __init__(self, size = 1):
         h2 = s2 * matrix([
             [1, 1],
@@ -323,7 +326,7 @@ class Hadamard(AbstractQGate):
         self.size = size
 
 
-class CNot(AbstractQGate):
+class CNot(ElementaryQuantumGate):
     '''Controlled not gate'''
 
     def __init__(self, control = 1, target = 0):
@@ -345,7 +348,7 @@ class CNot(AbstractQGate):
             raise Exception, 'Not implemented yet'
 
 
-class Not(AbstractQGate):
+class Not(ElementaryQuantumGate):
     '''Not gate'''
 
     def __init__(self):
@@ -354,7 +357,7 @@ class Not(AbstractQGate):
             [1, 0]])
         self.size = 1
 
-class PhaseShift(AbstractQGate):
+class PhaseShift(ElementaryQuantumGate):
     def __init__(self, angle = pi):
         self.angle = angle
         self.matrix = matrix([
@@ -363,7 +366,7 @@ class PhaseShift(AbstractQGate):
         self.size = 1
 
 
-class Toffoli(AbstractQGate):
+class Toffoli(ElementaryQuantumGate):
     '''Toffoli gate -- Controlled Controlled Not gate'''
     def __init__(self):
         self.matrix = matrix([
@@ -378,7 +381,7 @@ class Toffoli(AbstractQGate):
         self.size = 3
 
 
-class Fredkin(AbstractQGate):
+class Fredkin(ElementaryQuantumGate):
     '''Fredkin gate -- Controlled Swap gate'''
     def __init__(self):
         self.matrix = matrix([
@@ -393,7 +396,7 @@ class Fredkin(AbstractQGate):
         self.size = 3
 
 
-class Swap(AbstractQGate):
+class Swap(ElementaryQuantumGate):
     '''Qubits order swap gate'''
     def __init__(self):
         self.matrix = matrix([
@@ -404,7 +407,7 @@ class Swap(AbstractQGate):
         self.size = 2
 
 
-class Arbitrary(AbstractQGate):
+class Arbitrary(ElementaryQuantumGate):
     '''Quantum gate with arbitrary unitary matrix'''
     def __init__(self, m):
         m = matrix(m)

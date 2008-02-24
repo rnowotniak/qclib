@@ -27,6 +27,8 @@ B = 2 * phi0.outer(phi0) - I
 phi = phi0
 step = 0
 
+print A*B
+
 while step <= steps:
     print 'Step number: ' + str(step)
     print '----------------'
