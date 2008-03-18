@@ -1,0 +1,7 @@
+
+todo:
+	QuantumGate nie powinno byc interfejsem na si³ê -- lecz klasa abstrakcyjna
+		moze w niej byc sporo wspolnych definicji: trace, conjugate itp
+	w kontekscie powyzszego ORAZ w kontekscie jezyka Python znika wowoczas
+		troszke nieladna klasa Arbitrary
+
