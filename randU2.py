@@ -3,10 +3,10 @@
 from numpy import *
 from random import random
 
-phi = random()
-theta = random()
-psi = random()
-alpha = random()
+phi = 2 * pi * random() - pi
+theta = 2 * pi * random() - pi
+psi = 2 * pi * random() - pi
+alpha = 2 * pi * random() - pi
 
 m1 = matrix([
     [exp(-1j * phi), 0],
