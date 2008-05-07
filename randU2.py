@@ -3,28 +3,31 @@
 from numpy import *
 from random import random
 
-phi = 2 * pi * random() - pi
-theta = 2 * pi * random() - pi
-psi = 2 * pi * random() - pi
-alpha = 2 * pi * random() - pi
+def randU2():
+    phi = 2 * pi * random() - pi
+    theta = 2 * pi * random() - pi
+    psi = 2 * pi * random() - pi
+    alpha = 2 * pi * random() - pi
+    return u2(phi, theta, psi, alpha)
 
-m1 = matrix([
-    [exp(-1j * phi), 0],
-    [0, exp(1j * phi)]])
+def u2(phi, theta, psi, alpha):
+    m1 = matrix([
+        [exp(-1j * phi), 0],
+        [0, exp(1j * phi)]])
+    m2 = matrix([
+        [cos(theta), sin(-theta)],
+        [sin(theta), cos(theta)]])
+    m3 = matrix([
+        [exp(-1j * psi), 0],
+        [0, exp(1j * psi)]])
+    m4 = matrix([
+        [exp(1j*alpha), 0],
+        [0, exp(1j * alpha)]])
+    return m1 * m2 * m3 * m4
 
-m2 = matrix([
-    [cos(theta), sin(-theta)],
-    [sin(theta), cos(theta)]])
+U2 = randU2()
 
-m3 = matrix([
-    [exp(-1j * psi), 0],
-    [0, exp(1j * psi)]])
-
-m4 = matrix([
-    [exp(1j*alpha), 0],
-    [0, exp(1j * alpha)]])
-
-U2 = m1 * m2 * m3 * m4
-
-print U2*U2.H
+if __name__ == '__main__':
+    print U2
+    print U2*U2.H
 
