@@ -3,7 +3,7 @@
 from numpy import *
 from qclib import *
 from randU2 import randU2, u2
-from random import shuffle
+from random import shuffle, choice
 import sys
 
 # quantum examples
@@ -25,14 +25,15 @@ def fitness(m):
     t = (m * X - Y)
     return float(abs(0.5 * (t * t.H).trace()))
 
-precision = 6
+precision = 4
 xmin = -pi
 xmax = pi
 chromlen = 4 * int(ceil(log((xmax - xmin) * 10**precision + 1)/log(2.0)))
-poplen = 10
-iterations = 40
-pc = 0.95
-pm = 0.08
+poplen = 100
+elitism = 5
+iterations = 150
+pc = 0.90
+pm = 0.05
 
 def bin2real(s, a = xmin, b = xmax):
     return a + 1.0 * int(s, 2) * (1.0 * (b - a) / (2**len(s) - 1))
@@ -58,39 +59,72 @@ for c in population:
 
 print S
 
+best = None
+best_val = None
+
 for epoch in xrange(iterations):
 
-    print 'new epoch'
+    print 'epoch ' + str(epoch)
 
     # calculate fitness
     fvalues = []
     for i in xrange(poplen):
         fvalues.append(fitness(phenotype(population[i])))
+    # print fvalues, min(fvalues)
 
-    print fvalues, min(fvalues)
+    if best == None or min(fvalues) < best_val:
+        best_val = min(fvalues)
+        best = population[fvalues.index(best_val)]
 
-    sects = [-v for v in fvalues]
-    m = min(sects)
-    if m < 0:
-        sects = [s - m for s in sects]
-    sects /= sum(sects)
-    # print sects
+    if True: # tournament
+        newpop = []
+        # elitism
+        if elitism > 0:
+            ranking = fvalues[:]
+            ranking.sort()
+            for e in xrange(elitism):
+                newpop.append(population[fvalues.index(ranking[e])])
+        while len(newpop) < poplen:
+            i1 = choice(range(len(population)))
+            while True:
+                i2 = choice(range(len(population)))
+                if i1 != i2:
+                    break
+            while True:
+                i3 = choice(range(len(population)))
+                if i3 != i2 and i3 != i1:
+                    break
+            if fvalues[i1] >= max(fvalues[i2], fvalues[i3]):
+                newpop.append(population[i1])
+            elif fvalues[i2] >= max(fvalues[i1], fvalues[i3]):
+                newpop.append(population[i2])
+            else:
+                newpop.append(population[i3])
+        population = newpop
 
-    # accumulated
-    for i in xrange(1, poplen):
-        sects[i] = sects[i - 1] + sects[i]
+    if False: # roulette
+        sects = [-v for v in fvalues]
+        m = min(sects)
+        if m < 0:
+            sects = [s - m for s in sects]
+        sects /= sum(sects)
 
-    # print sects
+        # accumulated
+        for i in xrange(1, poplen):
+            sects[i] = sects[i - 1] + sects[i]
 
-    newpop = []
-    for i in xrange(poplen):
-        r = random()
-        for j in xrange(len(sects)):
-            if r <= sects[j]:
-                newpop.append(population[j])
-                break
+        #print population
+        #print sects
+        newpop = []
+        for i in xrange(poplen):
+            r = random()
+            for j in xrange(len(sects)):
+                if r <= sects[j]:
+                    newpop.append(population[j])
+                    break
 
-    population = newpop
+        population = newpop
+        print population
 
     toCrossover = []
     for n in xrange(poplen):
@@ -101,23 +135,20 @@ for epoch in xrange(iterations):
         while toCrossover.count(n) > 0:
             n = int(floor(random() * poplen))
         toCrossover.append(n)
-    pairs = range(len(toCrossover))
-    shuffle(pairs)
-
-    print toCrossover
-    print pairs
-    print [toCrossover[p] for p in pairs]
 
     done = []
     for n in xrange(len(toCrossover)):
-        print done
-        if done.count(toCrossover[n]) > 0:
+        par1 = toCrossover[n]
+        if done.count(par1) > 0:
             continue
 
+        while True:
+            par2 = choice(toCrossover)
+            if done.count(par2) == 0:
+                break
+
         cp = int(floor(random() * (chromlen - 1)))
-        par1 = toCrossover[n]
-        par2 = toCrossover[pairs[n]]
-        print par1, par2, cp, len(population)
+        # print par1, par2, cp, len(population)
         # print population[par1]
         # print population[par2]
         child1 = population[par1][:cp] + population[par2][cp:]
@@ -127,5 +158,19 @@ for epoch in xrange(iterations):
         done.append(par1)
         done.append(par2)
 
+    # mutation
+    for n in xrange(poplen):
+        for locus in xrange(chromlen):
+            if random() <= pm:
+                chrom = list(population[n])
+                if chrom[locus] == '1':
+                    chrom[locus] = '0'
+                else:
+                    chrom[locus] = '1'
+                population[n] = ''.join(chrom)
 
+
+print best_val
+print phenotype(best)
+print GOOD
 
