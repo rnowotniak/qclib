@@ -25,15 +25,16 @@ def fitness(m):
     t = (m * X - Y)
     return float(abs(0.5 * (t * t.H).trace()))
 
-precision = 4
+precision = 9
 xmin = -pi
 xmax = pi
 chromlen = 4 * int(ceil(log((xmax - xmin) * 10**precision + 1)/log(2.0)))
-poplen = 100
+print chromlen
+poplen = 40
 elitism = 5
-iterations = 150
+iterations = 100
 pc = 0.90
-pm = 0.05
+pm = 0.01
 
 def bin2real(s, a = xmin, b = xmax):
     return a + 1.0 * int(s, 2) * (1.0 * (b - a) / (2**len(s) - 1))
@@ -62,6 +63,8 @@ print S
 best = None
 best_val = None
 
+f = open('log.txt', 'w')
+
 for epoch in xrange(iterations):
 
     print 'epoch ' + str(epoch)
@@ -75,6 +78,8 @@ for epoch in xrange(iterations):
     if best == None or min(fvalues) < best_val:
         best_val = min(fvalues)
         best = population[fvalues.index(best_val)]
+
+    f.write('%d %f %f %f %f\n' % (epoch, best_val, min(fvalues), max(fvalues), sum(fvalues) / len(fvalues)))
 
     if True: # tournament
         newpop = []
@@ -94,9 +99,9 @@ for epoch in xrange(iterations):
                 i3 = choice(range(len(population)))
                 if i3 != i2 and i3 != i1:
                     break
-            if fvalues[i1] >= max(fvalues[i2], fvalues[i3]):
+            if fvalues[i1] < min(fvalues[i2], fvalues[i3]):
                 newpop.append(population[i1])
-            elif fvalues[i2] >= max(fvalues[i1], fvalues[i3]):
+            elif fvalues[i2] < min(fvalues[i1], fvalues[i3]):
                 newpop.append(population[i2])
             else:
                 newpop.append(population[i3])
@@ -173,4 +178,6 @@ for epoch in xrange(iterations):
 print best_val
 print phenotype(best)
 print GOOD
+
+f.close()
 
