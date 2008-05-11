@@ -30,35 +30,35 @@ class QclibTestCase(unittest.TestCase):
         print repr(ket0 ** ket1 ** ket0)
 
         # bramki elementarne
-        h2 = Hadamard()
+        h = Hadamard()
         I = Identity()
         cnot = CNot()
-        print h2
+        print h
         print I
         print cnot
         print repr(cnot)
 
         # mnozenie bramek
-        print h2 * I
+        print h * I
 
         # iloczyn tensorowy bramek
-        print h2 ** cnot
-        print h2 ** cnot ** cnot
+        print h ** cnot
+        print h ** cnot ** cnot
 
         # dzialanie bramka na rejestr lub kubit
-        print h2 * I
-        print h2 * ket0
-        print h2 * ket1
+        print h * I
+        print h * ket0
+        print h * ket1
 
         # calling gates like functions
-        print h2(ket0)
+        print h(ket0)
 
         print 
         cnot2 = CNot(0, 1)
-        circ = (I ** h2 ** I) * (I ** cnot) * (cnot2 ** I)
+        circ = (I ** h ** I) * (I ** cnot) * (cnot2 ** I)
         print circ(ket0 ** ket0 ** ket0)
         circ = QCircuit(
-                Stage(I, h2, I),
+                Stage(I, h, I),
                 Stage(I, cnot),
                 Stage(cnot2, I)
         )
@@ -66,7 +66,7 @@ class QclibTestCase(unittest.TestCase):
 
         print 
         input = ket0 ** ket0 ** ket0
-        circ = (I ** h2 ** I) * (I ** cnot) * (cnot2 ** I)
+        circ = (I ** h ** I) * (I ** cnot) * (cnot2 ** I)
         print circ(input)
 
         print

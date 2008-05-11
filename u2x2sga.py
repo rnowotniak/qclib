@@ -32,7 +32,7 @@ chromlen = 4 * int(ceil(log((xmax - xmin) * 10**precision + 1)/log(2.0)))
 print chromlen
 poplen = 40
 elitism = 5
-iterations = 100
+Ngen = 50
 pc = 0.90
 pm = 0.01
 
@@ -65,7 +65,7 @@ best_val = None
 
 f = open('log.txt', 'w')
 
-for epoch in xrange(iterations):
+for epoch in xrange(Ngen):
 
     print 'epoch ' + str(epoch)
 

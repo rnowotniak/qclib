@@ -316,12 +316,12 @@ class Identity(ElementaryQuantumGate):
 
 class Hadamard(ElementaryQuantumGate):
     def __init__(self, size = 1):
-        h2 = s2 * matrix([
+        h = s2 * matrix([
             [1, 1],
             [1, -1]])
-        m = h2
+        m = h
         for i in xrange(size - 1):
-            m = kron(m, h2)
+            m = kron(m, h)
         self.matrix = m
         self.size = size
 
@@ -463,7 +463,7 @@ ket1 = Ket(1)
 s2 = sqrt(2) / 2
 
 
-h2 = Hadamard()
+h = Hadamard()
 I = Identity()
 cnot = CNot()
 cnot2 = CNot(0, 1)

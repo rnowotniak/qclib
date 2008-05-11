@@ -15,6 +15,8 @@ def random_unitary_matrix(n, real = False):
     q = multiply(q, ph, q)
     return matrix(q)
 
+print random_unitary_matrix(3, real = True)
+
 a = random_unitary_matrix(3, real = True)
 print a
 print (abs(a*a.H - eye(3)) > 10e-6).any()
