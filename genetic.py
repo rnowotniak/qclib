@@ -29,6 +29,14 @@ def fitness(m):
     t = (m * X - Y)
     return float(abs(0.5 * (t * t.H).trace()))
 
+def fitness2(m):
+    err = 0
+    for i in xrange(X.shape[1]):
+        err += sum(m * X[:,i] - Y[:,i]) / (m.shape[0] * X.shape[1])
+    return exp(-err)
+
+#fitness = fitness
+
 iterations = 100
 poplen = 100
 pc = 0.85
