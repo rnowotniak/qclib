@@ -5,10 +5,11 @@ from qclib import *
 qregiter = epr()
 
 b1 = 1
-b2 = 1
+b2 = 0
 
 # Perform coding operations on Alice qubit
 if b1:
+    print (PhaseShift(pi) ** I)
     qregiter = (PhaseShift(pi) ** I)(qregiter)
 
 if b2:

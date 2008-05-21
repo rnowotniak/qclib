@@ -345,8 +345,21 @@ class CNot(ElementaryQuantumGate):
                 [0, 1, 0, 0]])
             self.size = 2
         else:
-            raise Exception, 'Not implemented yet'
-
+            size = abs(control - target) + 1
+            dim = 2 ** size
+            matrix = eye(dim)
+            for b in xrange(dim):
+                bstr = dec2bin(b, size)
+                if bstr[-(control+1)] == '1':
+                    bstr = list(bstr)
+                    if bstr[-(target+1)] == '0':
+                        bstr[-(target+1)] = '1'
+                    else:
+                        bstr[-(target+1)] = '0'
+                    bstr = ''.join(bstr)
+                    matrix[:,b] = eye(dim)[:,int(bstr, 2)]
+            self.matrix = matrix
+            self.size = size
 
 class Not(ElementaryQuantumGate):
     '''Not gate'''
@@ -467,4 +480,7 @@ h = Hadamard()
 I = Identity()
 cnot = CNot()
 cnot2 = CNot(0, 1)
+T = Arbitrary(matrix([
+    [1, 0],
+    [0, exp(1.0j*pi/4)]]))
 
