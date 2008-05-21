@@ -330,7 +330,10 @@ class CNot(ElementaryQuantumGate):
     '''Controlled not gate'''
 
     def __init__(self, control = 1, target = 0):
-        if control == 1 and target == 0:
+        if control == target:
+            # (it would impose non-unitary matrix)
+            raise Exception('Control and target qubits cannot be equal')
+        elif control == 1 and target == 0:
             self.matrix = matrix([
                 [1, 0, 0, 0],
                 [0, 1, 0, 0],
@@ -345,9 +348,12 @@ class CNot(ElementaryQuantumGate):
                 [0, 1, 0, 0]])
             self.size = 2
         else:
-            size = abs(control - target) + 1
+            size = max(control, target) + 1
+            if size == 1:
+                size = 2
             dim = 2 ** size
-            matrix = eye(dim)
+            self.matrix = eye(dim)
+            # find correct permutation of identity matrix columns
             for b in xrange(dim):
                 bstr = dec2bin(b, size)
                 if bstr[-(control+1)] == '1':
@@ -357,8 +363,7 @@ class CNot(ElementaryQuantumGate):
                     else:
                         bstr[-(target+1)] = '0'
                     bstr = ''.join(bstr)
-                    matrix[:,b] = eye(dim)[:,int(bstr, 2)]
-            self.matrix = matrix
+                    self.matrix[:,b] = eye(dim)[:,int(bstr, 2)]
             self.size = size
 
 class Not(ElementaryQuantumGate):
