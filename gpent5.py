@@ -80,11 +80,11 @@ def fitness(indiv):
 
 poplen = 100
 elitism = 5
-nstages = 7
+nstages = 5
 Ngen = 50
-pc = 0.5
-pm = 0.3
-nm = 3
+pc = 0.75
+pm = 0.05
+nm = 1
 
 # Generate random population
 population = []
