@@ -1,4 +1,13 @@
 #!/usr/bin/python
+#
+# Genetic Programming algorithm for for evolving
+# 3-qubit entanglement production quantum circuit
+#
+# Copyright (C) 2008   Robert Nowotniak <robert@nowotniak.com>
+#
+# based on:
+# [Rub00] Ben I. P. Rubinstein. Evolving quantum circuits using genetic programming
+#
 
 from random import choice,randint
 from qclib import *
@@ -152,19 +161,6 @@ for epoch in xrange(Ngen):
         if op == 'reproduction':
             newpop.append(dc(population[indiv1]))
         elif op == 'crossover':
-            # toCrossover = []
-            # for n in xrange(poplen):
-            #     if random() <= pc:
-            #         toCrossover.append(n)
-            # if len(toCrossover) % 2 != 0:
-            #     n = int(floor(random() * poplen))
-            #     while toCrossover.count(n) > 0:
-            #         n = int(floor(random() * poplen))
-            #     toCrossover.append(n)
-
-            # indices of already crossed-over genotypes
-            # done = []
-            # for n in xrange(len(toCrossover)):
 
             par1 = indiv1
             par2 = indiv2
