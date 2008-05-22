@@ -81,7 +81,7 @@ def fitness(indiv):
 poplen = 500
 elitism = 10
 nstages = 5
-Ngen = 10
+Ngen = 70
 pc = 0.75
 pm = 0.05
 nm = 1
@@ -110,6 +110,7 @@ best_val = None
 
 for epoch in xrange(Ngen):
     print 'epoch ' + str(epoch)
+    sys.stdout.flush()
 
     ###
     if epoch == 2 and CHEAT != None:
@@ -231,7 +232,7 @@ for epoch in xrange(Ngen):
 
     population = newpop
 
-print best_val
+print 'error:', best_val
 print best
 
 f.close()
