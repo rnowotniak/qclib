@@ -1,0 +1,6 @@
+#!/bin/bash
+
+echo Quantum Computing qclib shell
+
+ipython -nobanner qclib.py
+
