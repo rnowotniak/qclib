@@ -1,4 +1,13 @@
 #!/usr/bin/python
+#
+# Modified genetic algorithm for learning quantum operators
+#
+# Copyright (C) 2008   Robert Nowotniak <robert@nowotniak.com>
+#
+# based on:
+# J. Faber, R.N. Thess, and G. Giraldi. Learning linear operators by genetic algorithms
+#
+
 
 from numpy import *
 from qclib import *
