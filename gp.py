@@ -2,12 +2,16 @@
 
 from random import choice,randint
 from qclib import *
+from copy import deepcopy as dc
 import sys
 
+
 class Node:
+    ''' Genetic Programming Tree Node '''
+
     def __init__(self, type, target, control):
-        # T -- bramka Pi/8, czyli obracajaca o Pi/4
         self.type = type # T, H, I lub CNot
+        # T --  Pi/8 gates (shifts the phase with the Pi/4 angle)
         self.target = target
         self.control = control
 
@@ -15,18 +19,21 @@ class Node:
         return '(%s, %s, %s)' % (self.type, self.target, self.control)
 
 def randNode(qubits = 3):
+    ''' Generate random GP Tree Node '''
     return Node(
             choice(('I', 'H', 'T', 'CNot')), 
             ''.join([choice(['0', '1']) for x in xrange(qubits)]),
             ''.join([choice(['0', '1']) for x in xrange(qubits)]))
 
 def randGenotype(qubits = 3, length = 4):
+    ''' Generate random genotype (GP Tree) '''
     result = []
     for i in xrange(length):
         result.append(randNode(qubits))
     return result
 
 def phenotype(genotype):
+    ''' Transforms genotype into phenotypes (QCircuits) space '''
     stages = []
     for n in genotype:
         qubits = len(n.target)
@@ -54,7 +61,7 @@ def phenotype(genotype):
         stages.append(s)
     return QCircuit(*stages)
 
-input = Ket(0, 3)
+input = Ket(0, 3)  # |000>
 expected = s2 * Ket(0, 3) + s2 * Ket(7, 3)
 qubits = 3
 
@@ -62,44 +69,19 @@ def fitness(indiv):
     output = indiv(input)
     return sum(abs(output.matrix - expected.matrix))
 
-# gen = randGenotype(qubits=3, length=4)
-# #gen.append(Node('CNot', '000', '001'))
-# print gen
-# phen = phenotype(gen)
-# for s in phen.stages:
-#     print 'stage:'
-#     print s.gates
-# 
-# print expected.dirac()
-# 
-# output = phen(input)
-# 
-# print
-# print output.dirac()
-# print
-# 
-# error = sum(abs(output.matrix - expected.matrix))
-# 
-# print 'error:', error
-
 poplen = 100
-elitism = 15
+elitism = 5
 nstages = 5
 Ngen = 100
 pc = 0.7
-pm = 0.05
+pm = 0.03
+nm = 2
 
+# Generate random population
 population = []
 for i in xrange(poplen):
     population.append(randGenotype(qubits = qubits, length = nstages))
 
-# population[572] = \
-#     [Node('H', '001', '000'), Node('CNot', '000', '001'), Node('CNot', '010', '001')]
-
-# foo = population[572]
-# ph = phenotype(foo)
-# print fitness(ph)
-# sys.exit(0)
 
 f = open('log.txt', 'w')
 
@@ -114,6 +96,17 @@ for epoch in xrange(Ngen):
     fvalues = []
     for i in xrange(poplen):
         fvalues.append(fitness(phenotype(population[i])))
+
+    # for roulette selection
+    sects = [-v for v in fvalues]
+    m = min(sects)
+    if m < 0:
+        sects = [s - m + (0.01 * abs(m)) for s in sects]
+    sects /= sum(sects)
+    # accumulated probabilities
+    for i in xrange(1, poplen):
+        sects[i] = sects[i - 1] + sects[i]
+    sects[-1] = 1.0
 
     if best == None or min(fvalues) < best_val:
         best_val = min(fvalues)
@@ -132,89 +125,104 @@ for epoch in xrange(Ngen):
         kvs.sort()
         kvs = [(k,v) for (v,k) in kvs]
         for e in xrange(elitism):
-            newpop.append(population[kvs[e][0]])
+            newpop.append(dc(population[kvs[e][0]]))
 
-    # tournament selection
     while len(newpop) < poplen:
-        i1 = choice(range(len(population)))
-        while True:
-            i2 = choice(range(len(population)))
-            if i1 != i2:
-                break
-        while True:
-            i3 = choice(range(len(population)))
-            if i3 != i2 and i3 != i1:
-                break
-        if fvalues[i1] < min(fvalues[i2], fvalues[i3]):
-            newpop.append(population[i1])
-        elif fvalues[i2] < min(fvalues[i1], fvalues[i3]):
-            newpop.append(population[i2])
+        # select genetic operation probabilistically
+        r = random()
+        if r <= pm:
+            op = 'mutation'
+        elif r <= pm + pc:
+            op = 'crossover'
         else:
-            newpop.append(population[i3])
+            op = 'reproduction'
 
-    # cross over
-
-    toCrossover = []
-    for n in xrange(poplen):
-        if random() <= pc:
-            toCrossover.append(n)
-    if len(toCrossover) % 2 != 0:
-        n = int(floor(random() * poplen))
-        while toCrossover.count(n) > 0:
-            n = int(floor(random() * poplen))
-        toCrossover.append(n)
-
-    # indices of already crossed-over genotypes
-    done = []
-    for n in xrange(len(toCrossover)):
-        par1 = toCrossover[n]
-        if done.count(par1) > 0:
-            continue
-
-        while True:
-            par2 = choice(toCrossover)
-            if done.count(par2) == 0:
+        # select two individuals by roulette
+        r = random()
+        for j in xrange(len(sects)):
+            if r <= sects[j]:
+                indiv1 = j
+                break
+        r = random()
+        for j in xrange(len(sects)):
+            if r <= sects[j]:
+                indiv2 = j
                 break
 
-        # crossover type
-        crosstype = choice(('gate', 'target', 'control'))
+        if op == 'reproduction':
+            newpop.append(dc(population[indiv1]))
+        elif op == 'crossover':
+            # toCrossover = []
+            # for n in xrange(poplen):
+            #     if random() <= pc:
+            #         toCrossover.append(n)
+            # if len(toCrossover) % 2 != 0:
+            #     n = int(floor(random() * poplen))
+            #     while toCrossover.count(n) > 0:
+            #         n = int(floor(random() * poplen))
+            #     toCrossover.append(n)
 
-        if crosstype == 'gate':
-            cp = randint(1, nstages - 1)
-            child1 = population[par1][:cp] + population[par2][cp:]
-            child2 = population[par2][:cp] + population[par1][cp:]
-            # replace parents with the offspring
-            population[par1] = child1
-            population[par2] = child2
-            done.append(par1)
-            done.append(par2)
-        elif crosstype == 'target':
-            g1 = choice(population[par1])
-            g2 = choice(population[par2])
-            cp = randint(0, len(g1.target))
-            # crossover target qubit binary strings
-            child1 = g1.target[:cp] + g2.target[cp:]
-            child2 = g2.target[:cp] + g1.target[cp:]
-            g1.target = child1
-            g2.target = child2
-        elif crosstype == 'control':
-            g1 = choice(population[par1])
-            g2 = choice(population[par2])
-            cp = randint(0, len(g1.control))
-            # crossover control qubit binary strings
-            child1 = g1.control[:cp] + g2.control[cp:]
-            child2 = g2.control[:cp] + g1.control[cp:]
-            g1.control = child1
-            g2.control = child2
+            # indices of already crossed-over genotypes
+            # done = []
+            # for n in xrange(len(toCrossover)):
 
-    # mutation
-    for n in xrange(poplen):
-        for gi in xrange(len(population[n])):
-            if random() <= pm:
-                population[n][gi] = randNode(qubits = qubits)
+            par1 = indiv1
+            par2 = indiv2
+
+            # crossover type
+            crosstype = choice(('gate', 'target', 'control'))
+
+            if crosstype == 'gate':
+                cp = randint(1, nstages - 1)
+                child1 = dc(population[par1][:cp] + population[par2][cp:])
+                child2 = dc(population[par2][:cp] + population[par1][cp:])
+            elif crosstype == 'target':
+                child1 = dc(population[par1])
+                child2 = dc(population[par2])
+                g1 = choice(child1)
+                g2 = choice(child2)
+                cp = randint(0, len(g1.target))
+                # crossover target qubit binary strings
+                control1 = g1.target[:cp] + g2.target[cp:]
+                control2 = g2.target[:cp] + g1.target[cp:]
+                g1.target = control1
+                g2.target = control2
+            elif crosstype == 'control':
+                child1 = dc(population[par1])
+                child2 = dc(population[par2])
+                g1 = choice(child1)
+                g2 = choice(child2)
+                cp = randint(0, len(g1.control))
+                # crossover control qubit binary strings
+                target1 = g1.target[:cp] + g2.target[cp:]
+                target2 = g2.target[:cp] + g1.target[cp:]
+                g1.target = target1
+                g2.target = target2
+            else:
+                assert(False)
+            # add the offspring to new population
+            newpop.append(child1)
+            newpop.append(child2)
+        elif op == 'mutation':
+            # mutation
+            child = dc(population[indiv1])
+            done = []
+            for i in xrange(nm):
+                while True:
+                    gi = choice(xrange(len(child)))
+                    if gi not in done:
+                        break
+                done.append(gi)
+                child[gi] = randNode(qubits = qubits)
+            newpop.append(child)
+        else:
+            # NOT REACHABLE
+            assert(False)
+
+    population = newpop
 
 print best_val
-print phenotype(best)
+print best
 
 f.close()
 
