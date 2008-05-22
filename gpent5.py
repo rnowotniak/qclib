@@ -78,10 +78,10 @@ def fitness(indiv):
     output = indiv(input)
     return sum(abs(output.matrix - expected.matrix))
 
-poplen = 100
-elitism = 5
+poplen = 500
+elitism = 10
 nstages = 5
-Ngen = 50
+Ngen = 10
 pc = 0.75
 pm = 0.05
 nm = 1
@@ -90,6 +90,16 @@ nm = 1
 population = []
 for i in xrange(poplen):
     population.append(randGenotype(qubits = qubits, length = nstages))
+
+###
+# just a test..
+CHEAT = [
+        Node('H', '11111', '11011'),
+        Node('CNot', '01001', '10101'),
+        Node('CNot', '10010', '00001'),
+        Node('CNot', '11011', '01011'),
+        Node('CNot', '11001', '01001')]
+###
 
 f = open('log.txt', 'w')
 
@@ -100,6 +110,11 @@ best_val = None
 
 for epoch in xrange(Ngen):
     print 'epoch ' + str(epoch)
+
+    ###
+    if epoch == 2 and CHEAT != None:
+        population[randint(0,len(population)-1)] = CHEAT
+    ###
 
     fvalues = []
     for i in xrange(poplen):
