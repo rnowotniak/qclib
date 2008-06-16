@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # Genetic Programming algorithm for for evolving
-# 3-qubit entanglement production quantum circuit
+# 5-qubit entanglement production quantum circuit
 #
 # Copyright (C) 2008   Robert Nowotniak <robert@nowotniak.com>
 #

@@ -46,14 +46,14 @@ def fitness2(m):
 
 #fitness = fitness
 
-iterations = 100
+iterations = 500
 poplen = 100
 pc = 0.85
 pm = 0.95
 ps = 0.3
 elitism = 30
 nm = 2
-perturb = 0.05
+perturb = 0.03
 
 
 # initial random population

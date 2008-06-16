@@ -206,7 +206,7 @@ class QCircuit:
         self.stages = stages
 
     def __call__(self, qreg):
-        # Efficient algorithm could be implemented here
+        # Efficient algorithm could be implemented here instead. Reference:
         # Wissam A. Samad, Roy Ghandour, and Mohamad.
         # Memory efficient quantum circuit simulator based on linked list architecture
         result = copy.deepcopy(qreg)
