@@ -26,71 +26,71 @@ from qclib import *
 class QclibTestCase(unittest.TestCase):
     def runTest(self):
         # kety bazy standardowej
-        print ket0
-        print ket1
+        print(ket0)
+        print(ket1)
 
         # arbitralne stany kubitow
-        print 0.3 * ket0
-        print 0.4 * ket0 + 0.5 * ket1
-        print (0.4 * ket0 + 0.5 * ket1).normalize()
-        print repr(0.4 * ket0 + 0.5 * ket1)
-        print repr(ket0)
+        print(0.3 * ket0)
+        print(0.4 * ket0 + 0.5 * ket1)
+        print((0.4 * ket0 + 0.5 * ket1).normalize())
+        print(repr(0.4 * ket0 + 0.5 * ket1))
+        print(repr(ket0))
 
         # iloczyn tensorowy kubitow i rej kwantowych
-        print ket0 ** ket0
-        print ket0 ** ket1
-        print ket1 ** ket1
-        print repr(ket1 ** ket1)
-        print ket0 ** ket1 ** ket0
-        print repr(ket0 ** ket1 ** ket0)
+        print(ket0 ** ket0)
+        print(ket0 ** ket1)
+        print(ket1 ** ket1)
+        print(repr(ket1 ** ket1))
+        print(ket0 ** ket1 ** ket0)
+        print(repr(ket0 ** ket1 ** ket0))
 
         # bramki elementarne
         h = Hadamard()
         I = Identity()
         cnot = CNot()
-        print h
-        print I
-        print cnot
-        print repr(cnot)
+        print(h)
+        print(I)
+        print(cnot)
+        print(repr(cnot))
 
         # mnozenie bramek
-        print h * I
+        print(h * I)
 
         # iloczyn tensorowy bramek
-        print h ** cnot
-        print h ** cnot ** cnot
+        print(h ** cnot)
+        print(h ** cnot ** cnot)
 
         # dzialanie bramka na rejestr lub kubit
-        print h * I
-        print h * ket0
-        print h * ket1
+        print(h * I)
+        print(h * ket0)
+        print(h * ket1)
 
         # calling gates like functions
-        print h(ket0)
+        print(h(ket0))
 
-        print 
+        print()
         cnot2 = CNot(0, 1)
         circ = (I ** h ** I) * (I ** cnot) * (cnot2 ** I)
-        print circ(ket0 ** ket0 ** ket0)
+        print(circ(ket0 ** ket0 ** ket0))
         circ = QCircuit(
                 Stage(I, h, I),
                 Stage(I, cnot),
                 Stage(cnot2, I)
         )
-        print circ(ket0 ** ket0 ** ket0)
+        print(circ(ket0 ** ket0 ** ket0))
 
-        print 
+        print()
         input = ket0 ** ket0 ** ket0
         circ = (I ** h ** I) * (I ** cnot) * (cnot2 ** I)
-        print circ(input)
+        print(circ(input))
 
         print
-        print 'swap test, niesasiadujace kubity, test z cnot2'
+        print('swap test, niesasiadujace kubity, test z cnot2')
         circ = (I ** Swap()) * (cnot2 ** I) * (I ** Swap())
-        print circ
+        print(circ)
         input = ket1 ** ket0 ** ket1
-        print input.dirac()
-        print circ(input).dirac()
+        print(input.dirac())
+        print(circ(input).dirac())
 
 
 class QuantumCircuitTestCase(unittest.TestCase):
@@ -103,7 +103,7 @@ class QubitTestCase(unittest.TestCase):
         self.q1 = (0.3 * ket0 + 0.4 * ket1).normalize()
 
     def testQubit(self):
-        print self.q1
+        print(self.q1)
 
     def testFlip(self):
         pass
@@ -146,7 +146,7 @@ class QRegisterTestCase(unittest.TestCase):
                 'Not an EPR pair'
 
     def testKet(self):
-        print (Ket(5) + Ket(6)).normalize().dirac()
+        print((Ket(5) + Ket(6)).normalize().dirac())
 
     def testMeasureAll(self):
         assert ket0.measure() == ket0
@@ -180,15 +180,15 @@ class QRegisterTestCase(unittest.TestCase):
 
     def testMeasureSome(self):
         q0 = QRegister([ones(8) / sqrt(8)])
-        print q0
+        print(q0)
 
         q0 = QRegister([ones(8) / sqrt(8)])
-        print q0.measure(0)
+        print(q0.measure(0))
 
         q0 = QRegister([ones(8) / sqrt(8)])
-        print q0.measure(2, 1)
-        print q0
-        print q0.dirac()
+        print(q0.measure(2, 1))
+        print(q0)
+        print(q0.dirac())
 
         q = ket0 ** (s2 * ket0 + s2 * ket1).normalize() ** ket1
         assert q.measure(1) in (Ket(0), Ket(1))

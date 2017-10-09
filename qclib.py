@@ -83,14 +83,13 @@ class QRegister:
             else:
                 return 1
         except Exception:
-            raise WrongSizeException, \
-                    'Comparison of different size quantum registers'
+            raise WrongSizeException('Comparison of different size quantum registers')
 
     def __str__(self):
         return str(self.matrix)
 
     def reset(self, n = 0):
-        for i in xrange(self.matrix.size):
+        for i in range(self.matrix.size):
             self.matrix[i] = 0
         self.matrix[n] = 1
 
@@ -109,9 +108,9 @@ class QRegister:
         # number of possible measurement results
         nres = 2 ** len(qubits)
         # enumerate all posible results
-        for i in xrange(nres):
+        for i in range(nres):
             p[dec2bin(i, int(math.log(nres, 2)))[::-1]] = 0.0
-        for i in xrange(self.matrix.size):
+        for i in range(self.matrix.size):
             # reversed binary representation of base vector
             revbin = dec2bin(i, int(math.log(self.matrix.size, 2)))[::-1]
             # reversed binary representation of selected qubits
@@ -131,7 +130,7 @@ class QRegister:
                 result = k
                 break
         # selective reset of amplitudes
-        for i in xrange(self.matrix.size):
+        for i in range(self.matrix.size):
             revbin = dec2bin(i, int(math.log(self.matrix.size, 2)))[::-1]
             revsel = ''.join([revbin[q] for q in qubits])
             if revsel != result:
@@ -143,11 +142,11 @@ class QRegister:
     def dirac(self, reduce = True, binary = True):
         """Return state in Dirac (bra-ket) notation"""
         elems = []
-        if len(filter(lambda x: float(abs(x)) > 1 - epsilon, self.matrix)) == 1:
+        if len(list(filter(lambda x: float(abs(x)) > 1 - epsilon, self.matrix))) == 1:
             single = True
         else:
             single = False
-        for i in xrange(self.matrix.size):
+        for i in range(self.matrix.size):
             val = complex(real(self.matrix[i]), imag(self.matrix[i]))
             if reduce and abs(val) < epsilon:
                 continue
@@ -172,8 +171,7 @@ class QRegister:
     def outer(self, qreg):
         '''Compute an outer product with another register'''
         if self.matrix.size != transpose(qreg.matrix).size:
-            raise WrongSizeException, \
-                    'Outer product of different size registers'
+            raise WrongSizeException('Outer product of different size registers')
         result = Arbitrary(dot(self.matrix, transpose(qreg.matrix)))
         return result
 
@@ -236,7 +234,7 @@ class QGate:
             try:
                 result.matrix = dot(self.matrix, arg2.matrix)
             except:
-                raise WrongSizeException, 'Wrong size of input register for this gate'
+                raise WrongSizeException('Wrong size of input register for this gate')
             return result
         if self.matrix.shape != arg2.matrix.shape:
             raise Exception()
@@ -249,7 +247,7 @@ class QGate:
     def __rmul__(self, arg1):
         # arg1 * self
         if type(arg1) not in [int, float, complex]:
-            raise Exception, 'Numerical coefficient expected'
+            raise Exception('Numerical coefficient expected')
         result = copy.deepcopy(self)
         result.matrix = arg1 * self.matrix
         return result
@@ -320,7 +318,7 @@ class Hadamard(ElementaryQuantumGate):
             [1, 1],
             [1, -1]])
         m = h
-        for i in xrange(size - 1):
+        for i in range(size - 1):
             m = kron(m, h)
         self.matrix = m
         self.size = size
@@ -354,7 +352,7 @@ class CNot(ElementaryQuantumGate):
             dim = 2 ** size
             self.matrix = eye(dim)
             # find correct permutation of identity matrix columns
-            for b in xrange(dim):
+            for b in range(dim):
                 bstr = dec2bin(b, size)
                 if bstr[-(control+1)] == '1':
                     bstr = list(bstr)
@@ -445,7 +443,7 @@ def dec2bin(dec, length = None):
     """convert decimal value to binary string"""
     result = ''
     if dec < 0:
-        raise ValueError, "Must be a positive integer"
+        raise ValueError("Must be a positive integer")
     if dec == 0:
         result = '0'
         if length != None:
