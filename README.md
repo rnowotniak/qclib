@@ -30,8 +30,8 @@ logic gate model using overloaded operators in Python.
 The basic classes of the model are **QRegister**, representing a quantum register, and an
 abstract class **QuantumGate**, representing any given quantum gate. Concrete
 classes inherit from QuantumGate and overwrite the definition of the *compute*
-method. They are the elementary logic gates, like the Hadamard gate,
-Controlled-NOT gate, or phase shift gate.
+method. They are the elementary logic gates, like the **Hadamard gate**,
+**Controlled-NOT gate**, or **phase shift gate**.
 
 **The qclib library uses overloaded operators to wrap operations on unitary matrices which allows to express any quantum circuits.**
 The **operator &ast;&ast;** hides the tensor product operation, while the overloaded
