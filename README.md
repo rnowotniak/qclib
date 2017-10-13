@@ -39,7 +39,7 @@ The **operator &ast;&ast;** hides the tensor product operation, while the overlo
 serial gate connection in a quantum circuit. Moreover, the overloaded
 **operator ()** makes it possible to “call” the gates or quantum circuits and
 execute them in a way similar to quantum functions. The proposed object
-model is a very useful data structure for genetic algorithms processing and
+model is a very handy data structure for genetic algorithms processing and
 genetic programming (a type of genetic algorithms processing trees or graph
 structures).
 
@@ -47,7 +47,7 @@ structures).
 
 ### Entangles states generation quantum circuit[4]
 
-Some very simple quantum circuit example and its implementation in qclib:
+A very simple quantum circuit example and its implementation in qclib:
 
 ![Entangled states generation](img/ent3.png)
 
