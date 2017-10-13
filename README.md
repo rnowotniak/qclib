@@ -10,12 +10,12 @@ grows exponentially, and they can be used mainly for educational and demonstrati
 tasks small and trivial in size.
 
 The main library code is [qclib.py](qclib.py), there are also several example
-programs using this library and allowing you to simulate several simple
+programs included using this library and allowing you to simulate several simple
 quantum algorithms in the quantum logic gate model (the Grover's search
 algorithm, superdense coding, quantum teleportation protocol).
 
-The library was initially written in Python ver 2, but perhaps an experimental branch
-will be uploaded for Python 3.
+The library was initially written in Python ver 2, but perhaps I will migrated it
+to Python 3 shortly in an experimental branch.
 
 ## Object model for Quantum Computing
 
@@ -27,14 +27,14 @@ logic gate model using overloaded operators in Python.
 
 ![Object model for Quantum Computing](img/qc-diagram.png)
 
-The basic classes of the model are **QRegister**,representing a quantum register, and an
+The basic classes of the model are **QRegister**, representing a quantum register, and an
 abstract class **QuantumGate**, representing any given quantum gate. Concrete
 classes inherit from QuantumGate and overwrite the definition of the *compute*
-method. They are also the basic logic gates, like the Hadamard gate,
-Controlled-NOT gate, or phase shift gate. <u>The qclib library uses overloaded
-operators to pack operations on unitary matrices which allows to express any quantum circuits.</u>
-The **operator **** hides the tensor product operation, while the overloaded
-**operator *** hides the composition mapping function, which corresponds to
+method. They are the elementary logic gates, like the Hadamard gate,
+Controlled-NOT gate, or phase shift gate. *The qclib library uses overloaded
+operators to pack operations on unitary matrices which allows to express any quantum circuits.*
+The **operator &ast;&ast;** hides the tensor product operation, while the overloaded
+**operator &ast;** hides the composition mapping function, which corresponds to
 serial gate connection in a quantum circuit. Moreover, the overloaded
 **operator ()** makes it possible to “call” the gates or quantum circuits and
 execute them in a way similar to quantum functions. The proposed object
@@ -46,7 +46,7 @@ structures).
 
 ### Entangles states generation quantum circuit
 
-The most simple quantum circuit example and its implementation in qclib:
+Some very simple quantum circuit example and its implementation in qclib:
 
 ![Entangled states generation](img/ent3.png)
 
@@ -132,3 +132,13 @@ print B(qregiter).dirac()
 
 Please check in [grover.py](grover.py) for the full Grover's algorithm implementation in qclib.
 
+
+## References
+
+1. [http://robert.nowotniak.com/en/quantum-computing/](http://robert.nowotniak.com/en/quantum-computing/)
+1. [Nowotniak, Robert. On the evolutionary design of quantum algorithms (in Polish). 2008, Master’s thesis, Lodz University of Technology, 2008.](http://robert.nowotniak.com/files/rnowotniak-msc.pdf)
+1. [Nowotniak, Robert. Analysis of quantum-inspired evolutionary algorithms (in Polish). 2015, Doctoral dissertation, Lodz University of Technology](http://robert.nowotniak.com/files/rnowotniak-phd.pdf)
+1. C. Bennett, G. Brassard, C. Crepeau, R. Jozsa, A. Peres, and W. Wootters. Teleporting an unknown quantum state via dual classical and EPR channels. Phys Rev Lett, pages 1895-1899, 1993. 
+1. Lov K. Grover. A fast quantum mechanical algorithm for database search. In STOC ’96: Proceedings of the twenty-eighth annual ACM symposium on Theory of computing, pages 212-219, New York, NY, USA, 1996. ACM Press. 
+1. Michael A. Nielsen and Isaac L. Chuang. Quantum Computation and Quantum Information. Cambridge University Press, 2000. 
+1. A. Einstein, B. Podolsky, and N. Rosen. Can quantummechanical description of physical reality be considered complete? Phys. Rev., 47(10):777–780, May 1935.
