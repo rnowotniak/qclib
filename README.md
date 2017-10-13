@@ -31,8 +31,8 @@ The basic classes of the model are **QRegister**,representing a quantum register
 abstract class **QuantumGate**, representing any given quantum gate. Concrete
 classes inherit from QuantumGate and overwrite the definition of the *compute*
 method. They are also the basic logic gates, like the Hadamard gate,
-Controlled-NOT gate, or phase shift gate. __The qclib library uses overloaded
-operators to pack operations on unitary matrices which allows to express any quantum circuits.__
+Controlled-NOT gate, or phase shift gate. <u>The qclib library uses overloaded
+operators to pack operations on unitary matrices which allows to express any quantum circuits.</u>
 The **operator **** hides the tensor product operation, while the overloaded
 **operator *** hides the composition mapping function, which corresponds to
 serial gate connection in a quantum circuit. Moreover, the overloaded
@@ -46,14 +46,89 @@ structures).
 
 ### Entangles states generation quantum circuit
 
+The most simple quantum circuit example and its implementation in qclib:
+
 ![Entangled states generation](img/ent3.png)
+
+```python
+from qclib import *
+
+circuit = (I ** Hadamard() ** I) * (I ** CNot()) * (CNot(0, 1) ** I)
+result = circuit(ket0 ** ket0 ** ket0)
+
+print result.dirac()
+print result
+```
 
 ### Quantum teleportation protocol
 
 ![Quantum teleportation protocol](img/telecirc.png)
 
+```python
+# quantum gates for Brassard teleportation circuit
+L = Arbitrary(s2 * array([
+    [ 1, -1],
+    [ 1,  1],
+    ]))
+R = Arbitrary(s2 * array([
+    [ 1,  1],
+    [-1,  1],
+    ]))
+S = Arbitrary([
+    [ 1j,  0],
+    [ 0,   1],
+    ])
+T = Arbitrary([
+    [-1,   0],
+    [ 0, -1j],
+    ])
+
+psi = Qubit([
+    [      2.0/7 * (cos(pi/2/9) + 1.0j*sin(pi/2/9)) ],
+    [ sqrt(45)/7 * (cos(pi/3*2) + 1.0j*sin(pi/3*2)) ],
+    ])
+
+
+alice = (I ** L ** I) * (I ** cnot) * (cnot ** I) * (R ** I ** I)
+bob = (S ** cnot) * (I ** Swap()) * (cnot2 ** I) * \
+        (I ** Swap()) * (S ** I ** T) * (I ** Swap()) * (cnot2 ** I) * (I ** Swap())
+
+input = psi ** ket0 ** ket0
+qreg = alice(input)
+cbits = qreg.measure(1, 2)
+output = bob(qreg)
+
+print cbits ** psi # expected cirtuit output
+print output # teleporation circuit output
+```
+
 ### Superdense coding
+
+```python
+qregiter = epr()
+
+b1 = 1
+b2 = 0
+
+# Perform coding operations on Alice qubit
+if b1:
+    print (PhaseShift(pi) ** I)
+    qregiter = (PhaseShift(pi) ** I)(qregiter)
+
+if b2:
+    qregiter = (Not() ** I)(qregiter)
+
+B = Arbitrary([
+    [s2,   0,  0,  s2],
+    [ 0,  s2, s2,   0],
+    [s2,   0,  0, -s2],
+    [ 0, -s2, s2 ,  0],
+    ])
+
+print B(qregiter).dirac()
+```
 
 ### Grover’s algorithm
 
+Please check in [grover.py](grover.py) for the full Grover's algorithm implementation in qclib.
 
