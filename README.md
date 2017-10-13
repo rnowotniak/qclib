@@ -135,10 +135,10 @@ Please check in [grover.py](grover.py) for the full Grover's algorithm implement
 
 ## References
 
-1. [http://robert.nowotniak.com/en/quantum-computing/](http://robert.nowotniak.com/en/quantum-computing/)
-1. [Nowotniak, Robert. On the evolutionary design of quantum algorithms (in Polish). 2008, Master’s thesis, Lodz University of Technology, 2008.](http://robert.nowotniak.com/files/rnowotniak-msc.pdf)
-1. [Nowotniak, Robert. Analysis of quantum-inspired evolutionary algorithms (in Polish). 2015, Doctoral dissertation, Lodz University of Technology](http://robert.nowotniak.com/files/rnowotniak-phd.pdf)
 1. C. Bennett, G. Brassard, C. Crepeau, R. Jozsa, A. Peres, and W. Wootters. Teleporting an unknown quantum state via dual classical and EPR channels. Phys Rev Lett, pages 1895-1899, 1993. 
 1. Lov K. Grover. A fast quantum mechanical algorithm for database search. In STOC ’96: Proceedings of the twenty-eighth annual ACM symposium on Theory of computing, pages 212-219, New York, NY, USA, 1996. ACM Press. 
 1. Michael A. Nielsen and Isaac L. Chuang. Quantum Computation and Quantum Information. Cambridge University Press, 2000. 
 1. A. Einstein, B. Podolsky, and N. Rosen. Can quantummechanical description of physical reality be considered complete? Phys. Rev., 47(10):777–780, May 1935.
+1. [http://robert.nowotniak.com/en/quantum-computing/](http://robert.nowotniak.com/en/quantum-computing/)
+1. [Nowotniak, Robert. On the evolutionary design of quantum algorithms (in Polish). 2008, Master’s thesis, Lodz University of Technology, 2008.](http://robert.nowotniak.com/files/rnowotniak-msc.pdf)
+1. [Nowotniak, Robert. Analysis of quantum-inspired evolutionary algorithms (in Polish). 2015, Doctoral dissertation, Lodz University of Technology](http://robert.nowotniak.com/files/rnowotniak-phd.pdf)
