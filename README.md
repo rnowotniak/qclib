@@ -3,7 +3,7 @@ qclib
 
 QCLIB: Quantum Computing library for Python
 
-qclib is a simple Python library which allows to run quantum computing simulations
+qclib is a simple Python library which allows to run quantum computing simulations[3,5,6]
 on an ordinary computer (the library provides a kind of virtual quantum computer).
 The computational complexity of such simulations run on a traditional computer obviously
 grows exponentially, and they can be used mainly for educational and demonstrative purposes in
@@ -22,7 +22,7 @@ to Python 3 shortly in an experimental branch.
 In order to enable quantum computer simulation I proposed the following object model, which was then implemented in Python in the qclib library.
 
 The suggested model is inspired by an abstract syntax tree structure -
-analogously - it makes it possible to express any computation in the quantum
+and analogously - it makes it possible to express any computation in the quantum
 logic gate model using overloaded operators in Python.
 
 ![Object model for Quantum Computing](img/qc-diagram.png)
@@ -31,8 +31,9 @@ The basic classes of the model are **QRegister**, representing a quantum registe
 abstract class **QuantumGate**, representing any given quantum gate. Concrete
 classes inherit from QuantumGate and overwrite the definition of the *compute*
 method. They are the elementary logic gates, like the Hadamard gate,
-Controlled-NOT gate, or phase shift gate. *The qclib library uses overloaded
-operators to pack operations on unitary matrices which allows to express any quantum circuits.*
+Controlled-NOT gate, or phase shift gate.
+
+**The qclib library uses overloaded operators to wrap operations on unitary matrices which allows to express any quantum circuits.**
 The **operator &ast;&ast;** hides the tensor product operation, while the overloaded
 **operator &ast;** hides the composition mapping function, which corresponds to
 serial gate connection in a quantum circuit. Moreover, the overloaded
@@ -44,7 +45,7 @@ structures).
 
 ## Example quantum algorithms
 
-### Entangles states generation quantum circuit
+### Entangles states generation quantum circuit[4]
 
 Some very simple quantum circuit example and its implementation in qclib:
 
@@ -60,7 +61,7 @@ print result.dirac()
 print result
 ```
 
-### Quantum teleportation protocol
+### Quantum teleportation protocol[1]
 
 ![Quantum teleportation protocol](img/telecirc.png)
 
@@ -102,7 +103,7 @@ print cbits ** psi # expected cirtuit output
 print output # teleporation circuit output
 ```
 
-### Superdense coding
+### Superdense coding[3]
 
 ```python
 qregiter = epr()
@@ -128,7 +129,7 @@ B = Arbitrary([
 print B(qregiter).dirac()
 ```
 
-### Grover’s algorithm
+### Grover’s algorithm[2]
 
 Please check in [grover.py](grover.py) for the full Grover's algorithm implementation in qclib.
 
