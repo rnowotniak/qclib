@@ -9,7 +9,7 @@ The computational complexity of such simulations run on a traditional computer o
 grows exponentially, and they can be used mainly for educational and demonstrative purposes in
 tasks small and trivial in size.
 
-The main library code is [qclib.py](qclib.py), there are also several example
+The main library code is [https://github.com/rnowotniak/qclib/blob/master/qclib.py](qclib.py), there are also several example
 programs included using this library and allowing you to simulate several simple
 quantum algorithms in the quantum logic gate model (the Grover's search
 algorithm, superdense coding, quantum teleportation protocol).
